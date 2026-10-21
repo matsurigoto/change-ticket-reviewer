@@ -10,11 +10,11 @@ class OpenAICompatibleClient:
                  verify_ssl: bool = True, timeout: float = 60.0, http: httpx.Client | None = None):
         self._url = f"{base_url.rstrip('/')}/chat/completions"
         self._model = model
-        self._headers = {"Authorization": f"******"} if api_key else {}
+        self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._http = http or httpx.Client(proxy=proxy, verify=verify_ssl, timeout=timeout)
 
     def complete(self, system: str, user: str) -> str:
-        r = self._http.post(self._url, headers=self._headers, json={
+        self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
             "model": self._model, "temperature": 0,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]})
         r.raise_for_status()
