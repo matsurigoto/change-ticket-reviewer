@@ -1,0 +1,43 @@
+# Non-secret settings. Secrets are read from env vars named by *_env.
+# Any value can be overridden with TR_<SECTION>__<KEY>, e.g. TR_LLM__DEFAULT=external
+azure_devops:
+  base_url: https://dev.azure.com        # or on-prem: https://tfs.corp.local/tfs
+  organization: my-org
+  project: my-project
+  pat_env: ADO_PAT
+  proxy: null                            # e.g. http://proxy.corp:8080
+  verify_ssl: true
+  wiql: >-
+    SELECT [System.Id] FROM WorkItems
+    WHERE [System.WorkItemType] = 'Customer Change Ticket'
+    AND [System.State] = 'In Review'
+
+llm:
+  default: internal                      # switch to "external" via TR_LLM__DEFAULT
+  providers:
+    internal:                            # in-cluster / intranet model gateway
+      base_url: http://llm-gateway.internal/v1
+      model: internal-model
+      api_key_env: INTERNAL_LLM_API_KEY
+      proxy: null
+    external:                            # public API, goes through the proxy
+      base_url: https://api.openai.com/v1
+      model: gpt-4o
+      api_key_env: EXTERNAL_LLM_API_KEY
+      proxy: http://proxy.corp:8080
+
+scheduler:
+  interval_seconds: 300
+
+workflow:
+  approve_state: Approved                # state transition on pass
+  reject_state: null                     # null = only comment, keep state
+  comment_on_approve: true
+
+paths:
+  prompts_dir: config/prompts
+  rules_file: config/rules/change_ticket.yaml
+  skills_dir: config/skills
+  system_prompt: system.md
+  user_prompt: review.md
+  skills: [deployment-review]

@@ -1,0 +1,22 @@
+# Config is mounted from a ConfigMap (override config/); secrets come from a Secret.
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: ticket-reviewer-config}
+data:
+  TR_LLM__DEFAULT: internal
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: ticket-reviewer}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: ticket-reviewer}}
+  template:
+    metadata: {labels: {app: ticket-reviewer}}
+    spec:
+      containers:
+        - name: reviewer
+          image: ticket-reviewer:latest
+          envFrom:
+            - configMapRef: {name: ticket-reviewer-config}
+            - secretRef: {name: ticket-reviewer-secrets}   # ADO_PAT, INTERNAL_LLM_API_KEY, EXTERNAL_LLM_API_KEY

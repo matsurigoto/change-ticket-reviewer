@@ -1,0 +1,6 @@
+# Deterministic checks run before the LLM. checks: required | min_length | regex | one_of
+rules:
+  - {id: rollback, field: Custom.RollbackPlan, check: required, message: "Rollback plan is missing."}
+  - {id: monitoring, field: Custom.MonitoringPlan, check: required, message: "Monitoring plan is missing."}
+  - {id: deploy-method, field: Custom.DeploymentMethod, check: min_length, value: 20, message: "Deployment method is too brief."}
+  - {id: verification, field: Custom.VerificationSteps, check: required, message: "Post-deployment verification is missing."}
