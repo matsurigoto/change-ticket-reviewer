@@ -14,7 +14,7 @@ class OpenAICompatibleClient:
         self._http = http or httpx.Client(proxy=proxy, verify=verify_ssl, timeout=timeout)
 
     def complete(self, system: str, user: str) -> str:
-        self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        r = self._http.post(self._url, headers=self._headers, json={
             "model": self._model, "temperature": 0,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]})
         r.raise_for_status()
